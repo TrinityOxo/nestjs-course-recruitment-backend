@@ -19,12 +19,12 @@ export class PermissionsService {
     @InjectModel(Permission.name)
     private permissionModel: SoftDeleteModel<PermissionDocument>,
   ) {}
-  async create(createPermissionDto: CreatePermissionDto, user) {
+  async create(createPermissionDto: CreatePermissionDto, user: IUser) {
     const existPermission = await this.permissionModel.findOne({
       apiPath: createPermissionDto.apiPath,
       method: createPermissionDto.method,
     });
-    if (!existPermission) {
+    if (existPermission) {
       throw new ConflictException('permission already exist');
     }
 

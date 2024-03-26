@@ -6,8 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from 'src/decorator/customize';
-import { ignoreElements } from 'rxjs';
+import { IS_PUBLIC_KEY, IS_PUBLIC_PERMISSION } from 'src/decorator/customize';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -28,6 +27,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user, info, context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest();
+
+    const isSkipPermission = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_PERMISSION,
+      [context.getHandler(), context.getClass()],
+    );
+
     if (err || !user) {
       throw (
         err ||
@@ -35,24 +40,23 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       );
     }
 
-    console.log('may co chay vao day ko z');
-
     const currentMethod = request.method;
-    const currentEndpoint = request.url;
+    const currentEndpoint = request.url as string;
 
-    console.log(currentMethod);
-    console.log(currentEndpoint);
+    const permissions = user?.permissions ?? [];
 
-    const permission = user?.permission ?? [];
+    // let isExist = permissions.find((permission) => {
+    //   return (
+    //     // currentEndpoint === permission.apiPath &&
+    //     currentMethod === permission.method
+    //   );
+    // });
 
-    const isExist = permission.find((permission) => {
-      currentMethod === permission.method &&
-        currentEndpoint === permission.apiPath;
-    });
+    // if (currentEndpoint.startsWith('/api/v1/auth')) isExist = true;
 
-    if (!isExist) {
-      throw new ForbiddenException('Not allow');
-    }
+    // if (!isSkipPermission) {
+    //   throw new ForbiddenException('Not allow');
+    // }
 
     return user;
   }

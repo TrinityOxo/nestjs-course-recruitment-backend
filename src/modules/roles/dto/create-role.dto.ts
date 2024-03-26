@@ -21,7 +21,6 @@ export class CreateRoleDto {
   isActive: boolean;
 
   @IsNotEmpty()
-  @IsMongoId()
   @IsArray()
-  permissions: mongoose.Schema.Types.ObjectId[];
+  permissions: string[];
 }

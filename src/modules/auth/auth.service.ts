@@ -99,6 +99,7 @@ export class AuthService {
     }
 
     const userRole = user.role as unknown as { _id: string; name: string };
+
     const temp = await this.roleService.findOne(userRole._id);
 
     const objUser = {

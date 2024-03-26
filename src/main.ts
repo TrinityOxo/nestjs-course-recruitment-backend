@@ -29,7 +29,11 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   await app.listen(configService.get<string>('SERVER_PORT'));
 }

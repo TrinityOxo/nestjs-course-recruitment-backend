@@ -84,8 +84,4 @@ export class RegisterUserDto {
   @IsNotEmpty()
   @IsString()
   address: string;
-
-  @IsNotEmpty()
-  @IsString()
-  role: mongoose.Schema.Types.ObjectId;
 }

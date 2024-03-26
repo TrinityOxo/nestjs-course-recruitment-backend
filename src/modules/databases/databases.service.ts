@@ -9,7 +9,7 @@ import {
 import { Role, RoleDocument } from '../roles/schemas/role.schema';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
-import { ADMIN_ROLE, INIT_PERMISSIONS, USER_ROLE } from './sample';
+import { ADMIN_ROLE, HR_ROLE, INIT_PERMISSIONS, USER_ROLE } from './sample';
 
 @Injectable()
 export class DatabasesService implements OnModuleInit {
@@ -29,6 +29,7 @@ export class DatabasesService implements OnModuleInit {
 
     private userService: UsersService,
   ) {}
+
   async onModuleInit() {
     const isInit = this.configService.get<string>('SHOULD_INIT');
     if (Boolean(isInit)) {
@@ -58,12 +59,19 @@ export class DatabasesService implements OnModuleInit {
             isActive: true,
             permissions: [], //không set quyền, chỉ cần add ROLE
           },
+          {
+            name: HR_ROLE,
+            description: 'Người HR',
+            isActive: true,
+            permissions: [],
+          },
         ]);
       }
 
       if (countUser === 0) {
         const adminRole = await this.roleModel.findOne({ name: ADMIN_ROLE });
         const userRole = await this.roleModel.findOne({ name: USER_ROLE });
+        const hrRole = await this.roleModel.findOne({ name: HR_ROLE });
         await this.userModel.insertMany([
           {
             name: "I'm admin",
@@ -76,6 +84,7 @@ export class DatabasesService implements OnModuleInit {
             address: 'VietNam',
             role: adminRole?._id,
           },
+
           {
             name: "I'm Hỏi Dân IT",
             email: 'hoidanit@gmail.com',
@@ -87,6 +96,7 @@ export class DatabasesService implements OnModuleInit {
             address: 'VietNam',
             role: adminRole?._id,
           },
+
           {
             name: "I'm normal user",
             email: 'user@gmail.com',
@@ -97,6 +107,18 @@ export class DatabasesService implements OnModuleInit {
             gender: 'MALE',
             address: 'VietNam',
             role: userRole?._id,
+          },
+
+          {
+            name: "I'm HR",
+            email: 'hr@gmail.com',
+            password: this.userService.hashPassword(
+              this.configService.get<string>('INIT_PASSWORD'),
+            ),
+            age: 24,
+            gender: 'FEMALE',
+            address: 'VietNam',
+            role: hrRole?._id,
           },
         ]);
       }

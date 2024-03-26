@@ -27,6 +27,7 @@ export class AuthController {
   @ResponseMessage('register a user')
   @Post('register')
   register(@Body() registerUserDTO: RegisterUserDto) {
+    console.log('Hello world');
     return this.authService.register(registerUserDTO);
   }
 
@@ -42,7 +43,7 @@ export class AuthController {
   async getAccount(@User() user: IUser) {
     const temp = (await this.roleService.findOne(user.role._id)) as any;
     user.permissions = temp.permissions;
-    return user;
+    return { user };
   }
 
   @Public()

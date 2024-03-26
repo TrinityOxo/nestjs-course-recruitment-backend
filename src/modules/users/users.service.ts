@@ -140,7 +140,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    const user = this.userModel
+    const user = await this.userModel
       .findOne({ email })
       .populate({ path: 'role', select: { name: 1 } });
 
