@@ -15,6 +15,7 @@ import { RegisterUserDto } from '../users/dto/create-user.dto';
 import { Request as exRequest, Response } from 'express';
 import { IUser } from '../users/users.interface';
 import { RolesService } from '../roles/roles.service';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +33,8 @@ export class AuthController {
   }
 
   @Public()
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(@Request() req, @Res({ passthrough: true }) response: Response) {
